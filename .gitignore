@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+
+# fotos do usuario e resultados (nao versionar imagens)
+fotos/*
+!fotos/COLOQUE AS FOTOS AQUI.txt
+recortados/

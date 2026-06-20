@@ -1,0 +1,36 @@
+RECORTAR RETRATOS — remove o fundo das fotos e deixa só a pessoa
+(arquivo PNG com fundo transparente)
+
+================================================================
+COMO USAR (Mac)
+================================================================
+
+1) Coloque as fotos dentro da pasta "fotos".
+   (aceita JPG, PNG, HEIC do iPhone, etc. Pode colocar centenas.)
+
+2) Abra o arquivo "Recortar Retratos".
+   --> NA PRIMEIRA VEZ: clique com o BOTÃO DIREITO (ou Control+clique)
+       em cima dele, escolha "Abrir" e confirme em "Abrir".
+       Isso só é necessário uma vez. Depois é só dois cliques normais.
+
+3) Espere. Na primeira vez ele baixa o motor pela internet
+   (pode levar alguns minutos). Nas próximas vezes é rápido.
+
+4) Quando terminar, a pasta "recortados" abre sozinha com os
+   PNGs prontos, fundo transparente.
+
+================================================================
+DICAS
+================================================================
+
+- Pode rodar quantas vezes quiser. Ele pula as fotos que já foram
+  feitas, então dá pra ir adicionando fotos aos poucos.
+
+- Precisa de internet só na primeira vez (pra baixar o motor).
+  Depois funciona sem internet.
+
+- As fotos nunca saem do seu computador. Tudo é processado local.
+
+- Se aparecer um aviso de segurança dizendo que é de um
+  "desenvolvedor não identificado", use o botão direito > Abrir
+  (passo 2 acima). É normal e seguro.
