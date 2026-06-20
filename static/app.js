@@ -1,0 +1,171 @@
+/* RECORTAR RETRATOS — frontend logic */
+(() => {
+  "use strict";
+
+  const drop = document.getElementById("drop");
+  const fileInput = document.getElementById("file");
+  const grid = document.getElementById("grid");
+  const bar = document.getElementById("bar");
+  const statDone = document.getElementById("stat-done");
+  const statTotal = document.getElementById("stat-total");
+  const btnZip = document.getElementById("btn-zip");
+  const btnClear = document.getElementById("btn-clear");
+  const tpl = document.getElementById("card-tpl");
+
+  /** @type {{name:string, blob:Blob}[]} */
+  const results = [];
+  let total = 0;
+  let done = 0;
+  let inFlight = 0;
+
+  const MAX_CONCURRENT = 3;
+  const queue = [];
+
+  function refreshBar() {
+    bar.hidden = total === 0;
+    statTotal.textContent = String(total);
+    statDone.textContent = String(done);
+    btnZip.disabled = results.length === 0;
+  }
+
+  function baseName(name) {
+    const i = name.lastIndexOf(".");
+    return i > 0 ? name.slice(0, i) : name;
+  }
+
+  function pump() {
+    while (inFlight < MAX_CONCURRENT && queue.length) {
+      const job = queue.shift();
+      inFlight++;
+      job().finally(() => {
+        inFlight--;
+        pump();
+      });
+    }
+  }
+
+  async function processFile(file) {
+    // monta card
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    const img = node.querySelector("img");
+    const nameEl = node.querySelector(".card-name");
+    const dlBtn = node.querySelector(".card-dl");
+    const errEl = node.querySelector(".card-err");
+    const outName = baseName(file.name) + ".png";
+    nameEl.textContent = outName;
+    grid.prepend(node);
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file, file.name);
+      const res = await fetch("/api/remove", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      img.src = url;
+      img.alt = outName;
+      img.classList.add("ready");
+      node.classList.add("done");
+
+      const entry = { name: outName, blob };
+      results.push(entry);
+
+      dlBtn.disabled = false;
+      dlBtn.addEventListener("click", () => downloadBlob(blob, outName));
+    } catch (e) {
+      node.classList.add("done");
+      errEl.hidden = false;
+      img.remove();
+    } finally {
+      done++;
+      refreshBar();
+    }
+  }
+
+  function addFiles(fileList) {
+    const files = Array.from(fileList).filter((f) =>
+      /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name)
+    );
+    if (!files.length) return;
+    total += files.length;
+    refreshBar();
+    for (const f of files) queue.push(() => processFile(f));
+    pump();
+  }
+
+  function downloadBlob(blob, name) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  async function downloadZip() {
+    if (!results.length || typeof JSZip === "undefined") return;
+    btnZip.disabled = true;
+    const prev = btnZip.textContent;
+    btnZip.textContent = "compactando…";
+    const zip = new JSZip();
+    const used = {};
+    for (const r of results) {
+      let n = r.name;
+      if (used[n]) n = baseName(r.name) + "-" + ++used[r.name] + ".png";
+      else used[n] = 0;
+      zip.file(n, r.blob);
+    }
+    const out = await zip.generateAsync({ type: "blob" });
+    downloadBlob(out, "retratos-recortados.zip");
+    btnZip.textContent = prev;
+    btnZip.disabled = false;
+  }
+
+  function clearAll() {
+    grid.innerHTML = "";
+    results.length = 0;
+    queue.length = 0;
+    total = 0;
+    done = 0;
+    refreshBar();
+  }
+
+  // ---- eventos ----
+  drop.addEventListener("click", () => fileInput.click());
+  drop.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+  fileInput.addEventListener("change", () => {
+    addFiles(fileInput.files);
+    fileInput.value = "";
+  });
+
+  ["dragenter", "dragover"].forEach((ev) =>
+    drop.addEventListener(ev, (e) => {
+      e.preventDefault();
+      drop.classList.add("is-drag");
+    })
+  );
+  ["dragleave", "drop"].forEach((ev) =>
+    drop.addEventListener(ev, (e) => {
+      e.preventDefault();
+      if (ev === "dragleave" && drop.contains(e.relatedTarget)) return;
+      drop.classList.remove("is-drag");
+    })
+  );
+  drop.addEventListener("drop", (e) => {
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  // bloqueia drop fora da zona (evita abrir a imagem no navegador)
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", (e) => e.preventDefault());
+
+  btnZip.addEventListener("click", downloadZip);
+  btnClear.addEventListener("click", clearAll);
+})();

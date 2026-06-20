@@ -1,7 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# modelo baixado / cache rembg
+.models/
+.u2net/
+
 # macOS
 .DS_Store
-
-# fotos do usuario e resultados (nao versionar imagens)
-fotos/*
-!fotos/COLOQUE AS FOTOS AQUI.txt
-recortados/

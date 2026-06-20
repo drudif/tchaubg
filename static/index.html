@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RECORTAR RETRATOS</title>
+  <meta name="description" content="Remove o fundo de retratos e exporta cada pessoa em PNG transparente." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Martian+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css?v=2" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+</head>
+<body>
+  <!-- atmosfera -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <header class="hero">
+      <p class="kicker">// recortador de retratos — v1.0</p>
+      <h1 class="title">RECORTAR<br /><span class="title-accent">RETRATOS</span></h1>
+      <p class="tagline">
+        solta os retratos &rarr; tira o fundo &rarr; baixa em png transparente.
+        roda no modelo <span class="hl">birefnet&#8209;portrait</span>.
+      </p>
+    </header>
+
+    <!-- zona de upload -->
+    <section
+      id="drop"
+      class="drop"
+      tabindex="0"
+      role="button"
+      aria-label="Clique ou arraste imagens para recortar"
+    >
+      <input id="file" type="file" accept="image/*,.heic,.heif" multiple hidden />
+      <div class="drop-inner">
+        <div class="drop-mark" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p class="drop-title">ARRASTE OS RETRATOS AQUI</p>
+        <p class="drop-sub">ou clique para escolher &middot; jpg / png / heic &middot; vários de uma vez</p>
+      </div>
+    </section>
+
+    <!-- barra de status / ações -->
+    <section id="bar" class="bar" hidden>
+      <p class="bar-stat">
+        <span id="stat-done">0</span><span class="bar-sep">/</span><span id="stat-total">0</span>
+        <span class="bar-label">prontos</span>
+      </p>
+      <div class="bar-actions">
+        <button id="btn-zip" class="btn btn-primary" disabled>baixar tudo (.zip)</button>
+        <button id="btn-clear" class="btn btn-ghost">limpar</button>
+      </div>
+    </section>
+
+    <!-- resultados -->
+    <section id="grid" class="grid" aria-live="polite"></section>
+
+    <footer class="foot">
+      <span>processado localmente no servidor &middot; nada é armazenado</span>
+      <span class="foot-dot">●</span>
+      <span>tchaubg</span>
+    </footer>
+  </main>
+
+  <!-- template de card -->
+  <template id="card-tpl">
+    <article class="card">
+      <div class="card-thumb checker">
+        <img alt="" />
+        <div class="card-spin"><span></span></div>
+        <div class="card-err" hidden>falhou</div>
+      </div>
+      <div class="card-meta">
+        <span class="card-name"></span>
+        <button class="card-dl" title="Baixar PNG" aria-label="Baixar PNG" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+        </button>
+      </div>
+    </article>
+  </template>
+
+  <script src="/app.js?v=2" defer></script>
+</body>
+</html>
