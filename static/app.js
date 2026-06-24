@@ -1,4 +1,4 @@
-/* RECORTAR RETRATOS — frontend logic */
+/* TCHAU.BG — frontend logic */
 (() => {
   "use strict";
 
@@ -28,10 +28,10 @@
     btnZip.disabled = results.length === 0;
   }
 
-  function baseName(name) {
+  const baseName = (name) => {
     const i = name.lastIndexOf(".");
     return i > 0 ? name.slice(0, i) : name;
-  }
+  };
 
   function pump() {
     while (inFlight < MAX_CONCURRENT && queue.length) {
@@ -45,7 +45,6 @@
   }
 
   async function processFile(file) {
-    // monta card
     const node = tpl.content.firstElementChild.cloneNode(true);
     const img = node.querySelector("img");
     const nameEl = node.querySelector(".card-name");
@@ -61,22 +60,24 @@
       const res = await fetch("/api/remove", { method: "POST", body: fd });
       if (!res.ok) throw new Error("HTTP " + res.status);
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
 
+      const url = URL.createObjectURL(blob);
       img.src = url;
       img.alt = outName;
-      img.classList.add("ready");
+      // decodifica antes de revelar (sem flicker)
+      try { await img.decode(); } catch (_) {}
+
       node.classList.add("done");
+      requestAnimationFrame(() => img.classList.add("ready"));
 
       const entry = { name: outName, blob };
       results.push(entry);
-
       dlBtn.disabled = false;
       dlBtn.addEventListener("click", () => downloadBlob(blob, outName));
     } catch (e) {
       node.classList.add("done");
-      errEl.hidden = false;
       img.remove();
+      errEl.hidden = false;
     } finally {
       done++;
       refreshBar();
@@ -84,8 +85,8 @@
   }
 
   function addFiles(fileList) {
-    const files = Array.from(fileList).filter((f) =>
-      /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name)
+    const files = Array.from(fileList).filter(
+      (f) => /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name)
     );
     if (!files.length) return;
     total += files.length;
@@ -107,19 +108,19 @@
   async function downloadZip() {
     if (!results.length || typeof JSZip === "undefined") return;
     btnZip.disabled = true;
-    const prev = btnZip.textContent;
+    const prev = btnZip.innerHTML;
     btnZip.textContent = "compactando…";
     const zip = new JSZip();
     const used = {};
     for (const r of results) {
       let n = r.name;
-      if (used[n]) n = baseName(r.name) + "-" + ++used[r.name] + ".png";
+      if (used[n] != null) n = baseName(r.name) + "-" + ++used[r.name] + ".png";
       else used[n] = 0;
       zip.file(n, r.blob);
     }
     const out = await zip.generateAsync({ type: "blob" });
-    downloadBlob(out, "retratos-recortados.zip");
-    btnZip.textContent = prev;
+    downloadBlob(out, "tchaubg.zip");
+    btnZip.innerHTML = prev;
     btnZip.disabled = false;
   }
 
@@ -162,7 +163,6 @@
     if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
   });
 
-  // bloqueia drop fora da zona (evita abrir a imagem no navegador)
   window.addEventListener("dragover", (e) => e.preventDefault());
   window.addEventListener("drop", (e) => e.preventDefault());
 
