@@ -55,7 +55,7 @@ body {
 .hero { margin-bottom: clamp(2.4rem, 6vw, 3.6rem); }
 
 .eyebrow {
-  margin: 0 0 1rem;
+  margin: 0 0 clamp(2rem, 6vw, 3.5rem);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   color: var(--faint);
@@ -80,7 +80,7 @@ body {
 .title .dot { color: var(--accent); }
 
 .tagline {
-  margin: 1.5rem 0 0;
+  margin: clamp(2rem, 6vw, 3.5rem) 0 0;
   max-width: 46ch;
   font-size: clamp(0.95rem, 2.2vw, 1.06rem);
   font-weight: 400;
