@@ -54,6 +54,20 @@ body {
 /* ---------- hero ---------- */
 .hero { margin-bottom: clamp(2.4rem, 6vw, 3.6rem); }
 
+.eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+}
+.eyebrow a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: color 0.2s var(--ease-q), border-color 0.2s var(--ease-q);
+}
+.eyebrow a:hover { color: var(--accent); border-color: var(--accent); }
+
 .title {
   margin: 0;
   font-family: "Boldonse", system-ui, sans-serif;
