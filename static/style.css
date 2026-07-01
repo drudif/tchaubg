@@ -67,6 +67,71 @@ body {
   transition: color 0.2s var(--ease-q), border-color 0.2s var(--ease-q);
 }
 .eyebrow a:hover { color: var(--accent); border-color: var(--accent); }
+.eyebrow .sep { margin: 0 0.15rem; color: var(--line); }
+.eyebrow .report-bugs { color: var(--muted); border-bottom-color: var(--line); }
+.eyebrow .report-bugs:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- lightbox: reportar bug ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: oklch(0.22 0.012 350 / 0.42);
+  animation: fade 0.3s var(--ease) both;
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.lb-card {
+  width: 100%;
+  max-width: 420px;
+  background: oklch(0.985 0.003 60);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.6rem 1.5rem 1.4rem;
+  box-shadow: 0 30px 70px -30px oklch(0.22 0.012 350 / 0.5);
+  animation: rise 0.4s var(--ease) both;
+}
+.lb-card h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.lb-card .sub { margin: 0 0 1.2rem; font-size: 0.85rem; color: var(--muted); }
+.lb-card .field { display: grid; gap: 0.35rem; margin-bottom: 0.9rem; }
+.lb-card label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.lb-card input,
+.lb-card textarea {
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0.6rem 0.7rem;
+  outline: none;
+  transition: border-color 0.2s var(--ease-q), box-shadow 0.2s var(--ease-q);
+}
+.lb-card textarea { min-height: 108px; resize: vertical; line-height: 1.5; }
+.lb-card input::placeholder,
+.lb-card textarea::placeholder { color: var(--faint); }
+.lb-card input:focus,
+.lb-card textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(0.6 0.23 350 / 0.15);
+}
+.lb-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.2rem; }
+.lb-actions .btn { padding: 0.6rem 1.1rem; }
 
 .title {
   margin: 0;

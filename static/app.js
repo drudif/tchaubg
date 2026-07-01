@@ -168,4 +168,55 @@
 
   btnZip.addEventListener("click", downloadZip);
   btnClear.addEventListener("click", clearAll);
+
+  // ---- reportar bug (lightbox -> e-mail) ----
+  function openBugReport() {
+    const wrap = document.createElement("div");
+    wrap.className = "lightbox";
+    wrap.innerHTML = `
+      <div class="lb-card" role="dialog" aria-modal="true" aria-label="Reportar bug">
+        <h2>Reportar bug</h2>
+        <p class="sub">Conta o que aconteceu. Ao enviar, abre seu app de e-mail com a mensagem pronta pra fernando drudi.</p>
+        <div class="field">
+          <label for="bugEmail">Seu e-mail (opcional)</label>
+          <input id="bugEmail" type="email" placeholder="voce@email.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="bugMsg">O que rolou?</label>
+          <textarea id="bugMsg" placeholder="Descreva o bug, em qual etapa, o que você esperava…"></textarea>
+        </div>
+        <div class="lb-actions">
+          <button class="btn btn-ghost" type="button" id="bugCancel">cancelar</button>
+          <button class="btn btn-primary" type="button" id="bugSend">enviar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+
+    const close = () => {
+      wrap.remove();
+      document.removeEventListener("keydown", onKey);
+    };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    wrap.addEventListener("click", (e) => { if (e.target === wrap) close(); });
+    wrap.querySelector("#bugCancel").addEventListener("click", close);
+    wrap.querySelector("#bugMsg").focus();
+
+    wrap.querySelector("#bugSend").addEventListener("click", () => {
+      const msg = wrap.querySelector("#bugMsg").value.trim();
+      const from = wrap.querySelector("#bugEmail").value.trim();
+      if (!msg) { wrap.querySelector("#bugMsg").focus(); return; }
+      const subject = encodeURIComponent("Bug report — TCHAU.BG");
+      const body = encodeURIComponent(
+        `${msg}\n\n---\nDe: ${from || "(não informado)"}\nPágina: ${location.href}\nNavegador: ${navigator.userAgent}`
+      );
+      window.location.href = `mailto:f.drudi@gmail.com?subject=${subject}&body=${body}`;
+      close();
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest && e.target.closest(".report-bugs");
+    if (b) { e.preventDefault(); openBugReport(); }
+  });
 })();
